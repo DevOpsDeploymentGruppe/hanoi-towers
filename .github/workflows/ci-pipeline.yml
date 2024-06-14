@@ -1,0 +1,114 @@
+name: CI Pipeline Hanoi Towers
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    container:
+      image: gradle:7.3.3-jdk17
+
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for backend changes
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q '^hanoi-backend/'; then
+            echo "backend_changed=true" >> $GITHUB_ENV
+          else
+            echo "backend_changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set up .env file
+        if: env.backend_changed == 'true'
+        run: |
+          sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$JWT_SECRET|" hanoi-backend/.env
+          sed -i "s|^DATABASE_PASSWORD=.*|DATABASE_PASSWORD=$DATABASE_PASSWORD|" hanoi-backend/.env
+
+      - name: Set up JDK 17
+        if: env.backend_changed == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for Gradle Wrapper
+        if: env.backend_changed == 'true'
+        run: chmod +x ./gradlew
+
+      - name: Cache backend build artifacts
+        if: env.backend_changed == 'true'
+        uses: actions/cache@v4
+        with:
+          path: hanoi-backend/build/libs
+          key: backend-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
+          restore-keys: |
+            backend-${{ runner.os }}-
+
+      - name: Build backend
+        if: env.backend_changed == 'true'
+        run: |
+          ./gradlew :hanoi-backend:build
+
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    env:
+      HANOI_FRONTEND_URL: ${{ vars.HANOI_FRONTEND_URL }}
+      HANOI_BACKEND_URL: ${{ vars.HANOI_BACKEND_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for frontend changes
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q '^hanoi-frontend/'; then
+            echo "frontend_changed=true" >> $GITHUB_ENV
+          else
+            echo "frontend_changed=false" >> $GITHUB_ENV
+          fi
+
+      - name: Set up .env file
+        if: env.frontend_changed == 'true'
+        run: |
+          sed -i "s|^HANOI_FRONTEND_URL=.*|HANOI_FRONTEND_URL=$HANOI_FRONTEND_URL|" hanoi-frontend/.env
+          sed -i "s|^HANOI_BACKEND_URL=.*|HANOI_BACKEND_URL=$HANOI_BACKEND_URL|" hanoi-frontend/.env
+
+      - name: Set up JDK 17
+        if: env.frontend_changed == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for Gradle Wrapper
+        if: env.frontend_changed == 'true'
+        run: chmod +x ./gradlew
+
+      - name: Cache frontend build artifacts
+        if: env.frontend_changed == 'true'
+        uses: actions/cache@v4
+        with:
+          path: hanoi-frontend/build/dist/js/productionExecutable
+          key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
+          restore-keys: |
+            frontend-${{ runner.os }}-
+
+      - name: Build frontend
+        if: env.frontend_changed == 'true'
+        run: |
+          ./gradlew :hanoi-frontend:build
