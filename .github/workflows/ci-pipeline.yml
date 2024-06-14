@@ -100,7 +100,6 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Debug frontend build artifacts
-        if: env.frontend_changed == 'true'
         run: |
           echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ before cache save:"
           ls -alh hanoi-frontend/build/dist/js/productionExecutable/
