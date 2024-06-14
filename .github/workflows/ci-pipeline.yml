@@ -47,6 +47,11 @@ jobs:
         if: env.backend_changed == 'true'
         run: chmod +x ./gradlew
 
+      - name: Build backend
+        if: env.backend_changed == 'true'
+        run: |
+          ./gradlew :hanoi-backend:build
+
       - name: Cache backend build artifacts
         if: env.backend_changed == 'true'
         uses: actions/cache@v4
@@ -55,11 +60,6 @@ jobs:
           key: backend-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
           restore-keys: |
             backend-${{ runner.os }}-
-
-      - name: Build backend
-        if: env.backend_changed == 'true'
-        run: |
-          ./gradlew :hanoi-backend:build
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -99,10 +99,10 @@ jobs:
         if: env.frontend_changed == 'true'
         run: chmod +x ./gradlew
 
-      - name: Debug frontend build artifacts
+      - name: Build frontend
+        if: env.frontend_changed == 'true'
         run: |
-          echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ before cache save:"
-          ls -alh hanoi-frontend/build/dist/js/productionExecutable/
+          ./gradlew :hanoi-frontend:build
 
       - name: Cache frontend build artifacts
         if: env.frontend_changed == 'true'
@@ -112,11 +112,6 @@ jobs:
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
-
-      - name: Build frontend
-        if: env.frontend_changed == 'true'
-        run: |
-          ./gradlew :hanoi-frontend:build
 
   build-and-push-docker:
     runs-on: ubuntu-latest
@@ -147,11 +142,6 @@ jobs:
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
-
-      - name: Debug frontend build artifacts after cache restore
-        run: |
-          echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ after cache restore:"
-          ls -alh hanoi-frontend/build/dist/js/productionExecutable/
 
       - name: Set up .env file
         run: |
