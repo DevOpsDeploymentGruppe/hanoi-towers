@@ -103,7 +103,7 @@ jobs:
         if: env.frontend_changed == 'true'
         uses: actions/cache@v4
         with:
-          path: hanoi-frontend/build/dist/js/productionExecutable
+          path: hanoi-frontend/build/libs
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
@@ -138,7 +138,7 @@ jobs:
       - name: Restore frontend build artifacts from cache
         uses: actions/cache@v4
         with:
-          path: hanoi-frontend/build/dist/js/productionExecutable
+          path: hanoi-frontend/build/libs
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
