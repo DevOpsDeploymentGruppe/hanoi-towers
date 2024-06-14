@@ -112,3 +112,60 @@ jobs:
         if: env.frontend_changed == 'true'
         run: |
           ./gradlew :hanoi-frontend:build
+
+  build-and-push-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: lucasalt/act_base:latest
+    needs: [build-backend, build-frontend]
+
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      REGISTRY: ghcr.io/devopsdeploymentgruppe/hanoi-towers
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore backend build artifacts from cache
+        uses: actions/cache@v4
+        with:
+          path: hanoi-backend/build/libs
+          key: backend-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
+          restore-keys: |
+            backend-${{ runner.os }}-
+
+      - name: Restore frontend build artifacts from cache
+        uses: actions/cache@v4
+        with:
+          path: hanoi-frontend/build/dist/js/productionExecutable
+          key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
+          restore-keys: |
+            frontend-${{ runner.os }}-
+
+      - name: Set up .env file
+        run: |
+          sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$DB_PASSWORD|" hanoi-database/.env
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Build docker images
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Tag Docker images
+        run: |
+          REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          docker tag ${REPO_NAME}_hanoi_frontend $REGISTRY/hanoi_frontend:latest
+          docker tag ${REPO_NAME}_hanoi_backend $REGISTRY/hanoi_backend:latest
+          docker tag ${REPO_NAME}_hanoi_database $REGISTRY/hanoi_database:latest
+
+      - name: Push Docker images
+        run: |
+          docker push $REGISTRY/hanoi_frontend:latest
+          docker push $REGISTRY/hanoi_backend:latest
+          docker push $REGISTRY/hanoi_database:latest
