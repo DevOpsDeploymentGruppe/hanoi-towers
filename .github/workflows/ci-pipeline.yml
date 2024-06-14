@@ -61,6 +61,12 @@ jobs:
           restore-keys: |
             backend-${{ runner.os }}-
 
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-artifact
+          path: hanoi-backend/build/libs
+
   build-frontend:
     runs-on: ubuntu-latest
 
@@ -113,15 +119,11 @@ jobs:
         run: |
           ./gradlew :hanoi-frontend:build
 
-      - name: Debug frontend build artifacts
-        if: env.frontend_changed == 'true'
-        run: |
-          echo "Contents of hanoi-frontend/build/ after build:"
-          ls -alh hanoi-frontend/build/
-          echo "Contents of hanoi-frontend/build/dist/ after build:"
-          ls -alh hanoi-frontend/build/dist/
-          echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ after build:"
-          ls -alh hanoi-frontend/build/dist/js/productionExecutable/
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-artifact
+          path: hanoi-frontend/build/dist/js/productionExecutable
 
   build-and-push-docker:
     runs-on: ubuntu-latest
@@ -152,6 +154,18 @@ jobs:
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
+
+      - name: Download backend artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-artifact
+          path: hanoi-backend/build/libs
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-artifact
+          path: hanoi-frontend/build/dist/js/productionExecutable
 
       - name: Set up .env file
         run: |
