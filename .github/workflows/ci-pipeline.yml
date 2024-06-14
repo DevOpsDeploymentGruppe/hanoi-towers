@@ -99,6 +99,15 @@ jobs:
         if: env.frontend_changed == 'true'
         run: chmod +x ./gradlew
 
+      - name: Cache frontend build artifacts
+        if: env.frontend_changed == 'true'
+        uses: actions/cache@v4
+        with:
+          path: hanoi-frontend/build/dist/js/productionExecutable
+          key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
+          restore-keys: |
+            frontend-${{ runner.os }}-
+
       - name: Build frontend
         if: env.frontend_changed == 'true'
         run: |
@@ -113,15 +122,6 @@ jobs:
           ls -alh hanoi-frontend/build/dist/
           echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ after build:"
           ls -alh hanoi-frontend/build/dist/js/productionExecutable/
-
-      - name: Cache frontend build artifacts
-        if: env.frontend_changed == 'true'
-        uses: actions/cache@v4
-        with:
-          path: hanoi-frontend/build/dist/js/productionExecutable/
-          key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
-          restore-keys: |
-            frontend-${{ runner.os }}-
 
   build-and-push-docker:
     runs-on: ubuntu-latest
