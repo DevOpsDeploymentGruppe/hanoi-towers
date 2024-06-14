@@ -99,11 +99,17 @@ jobs:
         if: env.frontend_changed == 'true'
         run: chmod +x ./gradlew
 
+      - name: Debug frontend build artifacts
+        if: env.frontend_changed == 'true'
+        run: |
+          echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ before cache save:"
+          ls -alh hanoi-frontend/build/dist/js/productionExecutable/
+
       - name: Cache frontend build artifacts
         if: env.frontend_changed == 'true'
         uses: actions/cache@v4
         with:
-          path: hanoi-frontend/build/libs
+          path: hanoi-frontend/build/dist/js/productionExecutable/
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
@@ -138,10 +144,15 @@ jobs:
       - name: Restore frontend build artifacts from cache
         uses: actions/cache@v4
         with:
-          path: hanoi-frontend/build/libs
+          path: hanoi-frontend/build/dist/js/productionExecutable/
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
+
+      - name: Debug frontend build artifacts after cache restore
+        run: |
+          echo "Contents of hanoi-frontend/build/dist/js/productionExecutable/ after cache restore:"
+          ls -alh hanoi-frontend/build/dist/js/productionExecutable/
 
       - name: Set up .env file
         run: |
