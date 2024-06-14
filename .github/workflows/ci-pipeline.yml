@@ -62,7 +62,8 @@ jobs:
             backend-${{ runner.os }}-
 
       - name: Upload backend artifact
-        uses: actions/upload-artifact@v3
+        if: env.backend_changed == 'true'
+        uses: actions/upload-artifact@v4
         with:
           name: backend-artifact
           path: hanoi-backend/build/libs
@@ -120,7 +121,8 @@ jobs:
           ./gradlew :hanoi-frontend:build
 
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@v3
+        if: env.frontend_changed == 'true'
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-artifact
           path: hanoi-frontend/build/dist/js/productionExecutable
@@ -156,13 +158,13 @@ jobs:
             frontend-${{ runner.os }}-
 
       - name: Download backend artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: backend-artifact
           path: hanoi-backend/build/libs
 
       - name: Download frontend artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: frontend-artifact
           path: hanoi-frontend/build/dist/js/productionExecutable
