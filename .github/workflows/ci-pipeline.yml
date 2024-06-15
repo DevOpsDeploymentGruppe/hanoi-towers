@@ -78,7 +78,6 @@ jobs:
           key: backend-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
           restore-keys: |
             backend-${{ runner.os }}-
-          retention-days: 60
 
       - name: Upload backend artifact
         if: env.backend_changed == 'true'
@@ -135,7 +134,6 @@ jobs:
           key: frontend-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ runner.os }}-
-          retention-days: 60
 
       - name: Build frontend
         if: env.frontend_changed == 'true'
