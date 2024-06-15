@@ -149,6 +149,7 @@ jobs:
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       REGISTRY: ghcr.io/devopsdeploymentgruppe/hanoi-towers
+      ENVIRONMENT: ${{ needs.set-environment.outputs.env }}
 
     steps:
       - name: Checkout repository
@@ -171,12 +172,14 @@ jobs:
             frontend-${{ runner.os }}-
 
       - name: Download backend artifact
+        if: env.backend_changed == 'true'
         uses: actions/download-artifact@v4
         with:
           name: backend-artifact
           path: hanoi-backend/build/libs
 
       - name: Download frontend artifact
+        if: env.frontend_changed == 'true'
         uses: actions/download-artifact@v4
         with:
           name: frontend-artifact
@@ -199,12 +202,12 @@ jobs:
       - name: Tag Docker images
         run: |
           REPO_NAME=$(basename $GITHUB_REPOSITORY)
-          docker tag ${REPO_NAME}_hanoi_frontend $REGISTRY/hanoi_frontend:latest
-          docker tag ${REPO_NAME}_hanoi_backend $REGISTRY/hanoi_backend:latest
-          docker tag ${REPO_NAME}_hanoi_database $REGISTRY/hanoi_database:latest
+          docker tag ${REPO_NAME}_hanoi_frontend $REGISTRY/hanoi_frontend_${ENVIRONMENT}:latest
+          docker tag ${REPO_NAME}_hanoi_backend $REGISTRY/hanoi_backend_${ENVIRONMENT}:latest
+          docker tag ${REPO_NAME}_hanoi_database $REGISTRY/hanoi_database_${ENVIRONMENT}:latest
 
       - name: Push Docker images
         run: |
-          docker push $REGISTRY/hanoi_frontend:latest
-          docker push $REGISTRY/hanoi_backend:latest
-          docker push $REGISTRY/hanoi_database:latest
+          docker push $REGISTRY/hanoi_frontend_${ENVIRONMENT}:latest
+          docker push $REGISTRY/hanoi_backend_${ENVIRONMENT}:latest
+          docker push $REGISTRY/hanoi_database_${ENVIRONMENT}:latest
