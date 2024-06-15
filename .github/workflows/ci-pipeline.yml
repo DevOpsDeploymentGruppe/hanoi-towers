@@ -30,12 +30,11 @@ jobs:
     needs: set-environment
     environment: ${{ needs.set-environment.outputs.env }}
     outputs:
-      env: ${{ steps.backend-check.outputs.backend_changed }}
+      backend_changed: ${{ steps.backend-check.outputs.backend_changed }}
 
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      BACKEND_CHANGED: ${{ steps.backend-check.outputs.backend_changed }}
 
     steps:
       - name: Checkout repository
@@ -97,7 +96,7 @@ jobs:
     needs: set-environment
     environment: ${{ needs.set-environment.outputs.env }}
     outputs:
-      env: ${{ steps.frontend-check.outputs.frontend_changed }}
+      frontend_changed: ${{ steps.frontend-check.outputs.frontend_changed }}
 
     env:
       HANOI_FRONTEND_URL: ${{ vars.HANOI_FRONTEND_URL }}
