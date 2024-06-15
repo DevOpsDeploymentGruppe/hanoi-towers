@@ -4,13 +4,31 @@ on:
   push:
     branches:
       - master
+      - staging
       - develop
 
 jobs:
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      env: ${{ steps.set-env.outputs.env }}
+
+    steps:
+      - name: Determine environment
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "::set-output name=env::prod"
+          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            echo "::set-output name=env::staging"
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "::set-output name=env::develop"
+          fi
+
   build-backend:
     runs-on: ubuntu-latest
-    container:
-      image: gradle:7.3.3-jdk17
+    needs: set-environment
+    environment: ${{ needs.set-environment.outputs.env }}
 
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -70,6 +88,8 @@ jobs:
 
   build-frontend:
     runs-on: ubuntu-latest
+    needs: set-environment
+    environment: ${{ needs.set-environment.outputs.env }}
 
     env:
       HANOI_FRONTEND_URL: ${{ vars.HANOI_FRONTEND_URL }}
@@ -131,7 +151,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: lucasalt/act_base:latest
-    needs: [build-backend, build-frontend]
+    needs: [build-backend, build-frontend, set-environment]
+    environment: ${{ needs.set-environment.outputs.env }}
 
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
