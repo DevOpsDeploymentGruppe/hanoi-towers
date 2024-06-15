@@ -189,13 +189,6 @@ jobs:
           restore-keys: |
             frontend-${{ runner.os }}-
 
-      - name: Debug change variables
-        run: |
-          echo "frontend_changed value is ${{ needs.build-frontend.outputs.frontend_changed }}"
-          echo "backend_changed value is ${{ needs.build-backend.outputs.backend_changed }}"
-          echo "backend changed: ${{ needs.build-backend.outputs.backend_changed == 'true' }}
-          echo "frontend changed: ${{ needs.build-frontend.outputs.frontend_changed == 'true' }}
-
       - name: Download backend artifact
         if: ${{ needs.build-backend.outputs.backend_changed == 'true' }}
         uses: actions/download-artifact@v4
