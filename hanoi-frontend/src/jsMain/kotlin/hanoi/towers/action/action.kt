@@ -21,7 +21,7 @@ data class Base(
 suspend inline fun <reified T> Get(
     url: String,
     crossinline block: HttpRequestBuilder.(Environment)->Unit = {port  = it.hanoiBackendPort}
-): Action<T> = State{ //test
+): Action<T> = State{
     base -> base.client.get<T>(url) {
          this.block(base.environment)
     } x base
