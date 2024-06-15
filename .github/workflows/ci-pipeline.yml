@@ -35,6 +35,7 @@ jobs:
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      BACKEND_CHANGED: ${{ steps.backend-check.outputs.backend_changed }}
 
     steps:
       - name: Checkout repository
