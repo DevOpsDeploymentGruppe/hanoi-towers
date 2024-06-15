@@ -29,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: set-environment
     environment: ${{ needs.set-environment.outputs.env }}
+    outputs:
+      env: ${{ steps.backend-check.outputs.backend_changed }}
 
     env:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -93,6 +95,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: set-environment
     environment: ${{ needs.set-environment.outputs.env }}
+    outputs:
+      env: ${{ steps.frontend-check.outputs.frontend_changed }}
 
     env:
       HANOI_FRONTEND_URL: ${{ vars.HANOI_FRONTEND_URL }}
