@@ -191,20 +191,20 @@ jobs:
 
       - name: Debug change variables
         run: |
-          echo "frontend_changed value is ${{ needs.frontend-check.outputs.frontend_changed }}"
-          echo "backend_changed value is ${{ needs.backend-check.outputs.backend_changed }}"
-          echo "backend changed: ${{ needs.backend-check.outputs.backend_changed == 'true' }}
-          echo "frontend changed: ${{ needs.frontend-check.outputs.frontend_changed == 'true' }}
+          echo "frontend_changed value is ${{ needs.build-frontend.outputs.frontend_changed }}"
+          echo "backend_changed value is ${{ needs.build-backend.outputs.backend_changed }}"
+          echo "backend changed: ${{ needs.build-backend.outputs.backend_changed == 'true' }}
+          echo "frontend changed: ${{ needs.build-frontend.outputs.frontend_changed == 'true' }}
 
       - name: Download backend artifact
-        if: ${{ needs.backend-check.outputs.backend_changed == 'true' }}
+        if: ${{ needs.build-backend.outputs.backend_changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: backend-artifact
           path: hanoi-backend/build/libs
 
       - name: Download frontend artifact
-        if: ${{ needs.frontend-check.outputs.frontend_changed == 'true' }}
+        if: ${{ needs.build-frontend.outputs.frontend_changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: frontend-artifact
