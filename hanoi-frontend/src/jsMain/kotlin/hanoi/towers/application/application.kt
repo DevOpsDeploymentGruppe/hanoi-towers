@@ -12,7 +12,7 @@ import org.jetbrains.compose.web.renderComposable
 
 @Markup
 @Suppress("FunctionName")
-fun Application() = renderComposable(rootElementId = "root") { //test
+fun Application() = renderComposable(rootElementId = "root") {
     Store({ Storage() }) {
         when( langLoaded() ) {
             true -> UI(this)
