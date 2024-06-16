@@ -7,16 +7,12 @@ import io.ktor.client.request.*
 
 suspend fun Environment.i18n(locale: String): String =
     with(HttpClient(Js)) {
-        get<String>("$hanoiFrontendURL/i18n/$locale"){
-            port = hanoiFrontendPort
-        }
+        get<String>("$hanoiFrontendURL/i18n/$locale")
     }
 
 suspend fun Environment.i18n(): Any =
     with(HttpClient(Js)) {
-        get<Any>("$hanoiFrontendURL/i18n/"){
-            port = hanoiFrontendPort
-        }
+        get<Any>("$hanoiFrontendURL/i18n/")
     }
 
 

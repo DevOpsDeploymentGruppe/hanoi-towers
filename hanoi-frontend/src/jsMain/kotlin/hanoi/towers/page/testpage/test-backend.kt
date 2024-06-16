@@ -32,9 +32,7 @@ fun TestBackend()= Div {
 
                             count++
                             kotlinx.serialization.json.Json.decodeFromString(
-                            get("${environment.hanoiBackendURL}/hello") {
-                                port = environment.hanoiBackendPort
-                            })
+                            get("${environment.hanoiBackendURL}/hello"))
 
                         }} catch (e: Exception) {
                             console.log(e)
