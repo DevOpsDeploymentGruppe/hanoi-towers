@@ -81,15 +81,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: hanoi-backend/build/libs
-          key: backend-${ENVIRONMENT}-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
+          key: backend-${{ env.ENVIRONMENT }}-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
           restore-keys: |
-            backend-${ENVIRONMENT}-${{ runner.os }}-
+            backend-${{ env.ENVIRONMENT }}-${{ runner.os }}-
 
       - name: Upload backend artifact
         if: env.backend_changed == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: backend-artifact-${ENVIRONMENT}
+          name: backend-artifact-${{ env.ENVIRONMENT }}
           path: hanoi-backend/build/libs
 
   build-frontend:
@@ -143,9 +143,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: hanoi-frontend/build/dist/js/productionExecutable
-          key: frontend-${ENVIRONMENT}-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
+          key: frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
-            frontend-${ENVIRONMENT}-${{ runner.os }}-
+            frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-
 
       - name: Build frontend
         if: env.frontend_changed == 'true'
@@ -156,7 +156,7 @@ jobs:
         if: env.frontend_changed == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-artifact-${ENVIRONMENT}
+          name: frontend-artifact-${{ env.ENVIRONMENT }}
           path: hanoi-frontend/build/dist/js/productionExecutable
 
   build-and-push-docker:
@@ -179,30 +179,30 @@ jobs:
         uses: actions/cache@v4
         with:
           path: hanoi-backend/build/libs
-          key: backend-${ENVIRONMENT}-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
+          key: backend-${{ env.ENVIRONMENT }}-${{ runner.os }}-${{ hashFiles('hanoi-backend/**') }}
           restore-keys: |
-            backend-${ENVIRONMENT}-${{ runner.os }}-
+            backend-${{ env.ENVIRONMENT }}-${{ runner.os }}-
 
       - name: Restore frontend build artifacts from cache
         uses: actions/cache@v4
         with:
           path: hanoi-frontend/build/dist/js/productionExecutable/
-          key: frontend-${ENVIRONMENT}-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
+          key: frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
-            frontend-${ENVIRONMENT}-${{ runner.os }}-
+            frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-
 
       - name: Download backend artifact
         if: ${{ needs.build-backend.outputs.backend_changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
-          name: backend-artifact-${ENVIRONMENT}
+          name: backend-artifact-${{ env.ENVIRONMENT }}
           path: hanoi-backend/build/libs
 
       - name: Download frontend artifact
         if: ${{ needs.build-frontend.outputs.frontend_changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
-          name: frontend-artifact-${ENVIRONMENT}
+          name: frontend-artifact-${{ env.ENVIRONMENT }}
           path: hanoi-frontend/build/dist/js/productionExecutable
 
       - name: Set up .env file
