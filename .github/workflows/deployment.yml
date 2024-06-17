@@ -35,12 +35,12 @@ jobs:
       - name: Redeploy DB
         env:
           DB_HOOK: ${{ secrets.DB_HOOK }}
-        run: curl -X GET $DB_HOOK
+        run: curl -X GET ${{ env.DB_HOOK }}
       - name: Redeploy backend
         env:
           BACKEND_HOOK: ${{ secrets.BACKEND_HOOK }}
-        run: curl -X GET $BACKEND_HOOK 
+        run: curl -X GET ${{ env.BACKEND_HOOK }}
       - name: Redeploy frontend
         env:
           FRONTEND_HOOK: ${{ secrets.FRONTEND_HOOK }}
-        run: curl -X GET $FRONTEND_HOOK
+        run: curl -X GET ${{ env.FRONTEND_HOOK }}
