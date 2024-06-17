@@ -1,0 +1,46 @@
+name: Deployment
+on:
+  workflow_run:
+    workflows:
+      - 'CI Pipeline Hanoi Towers'
+    types:
+      - completed
+jobs: 
+  set-environment:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    outputs:
+      env: ${{ steps.set-env.outputs.env }}
+    steps:
+      - name: Determine environment
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "env=prod" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            echo "env=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "env=develop" >> $GITHUB_OUTPUT
+          fi
+  deploy-backend:
+    runs-on: ubuntu-latest
+    needs: set-environment
+    if: github.event.workflow_run.conclusion == 'success'
+    environment: ${{ needs.set-environment.outputs.env }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Redeploy DB
+        env:
+          DB_HOOK: ${{ secrets.DB_HOOK }}
+        run: curl -X GET $DB_HOOK
+      - name: Redeploy backend
+        env:
+          BACKEND_HOOK: ${{ secrets.BACKEND_HOOK }}
+        run: curl -X GET $BACKEND_HOOK 
+      - name: Redeploy frontend
+        env:
+          FRONTEND_HOOK: ${{ secrets.FRONTEND_HOOK }}
+        run: curl -X GET $FRONTEND_HOOK
