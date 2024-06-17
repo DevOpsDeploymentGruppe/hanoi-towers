@@ -231,7 +231,7 @@ jobs:
           docker push ${REGISTRY}/hanoi_frontend_${ENVIRONMENT}:latest
           docker push ${REGISTRY}/hanoi_backend_${ENVIRONMENT}:latest
           docker push ${REGISTRY}/hanoi_database_${ENVIRONMENT}:latest
-  deploy-backend:
+  deploy:
     runs-on: ubuntu-latest
     needs: [build-and-push-docker, set-environment]
     environment: ${{ needs.set-environment.outputs.env }}
