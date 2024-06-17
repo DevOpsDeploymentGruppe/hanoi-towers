@@ -18,7 +18,7 @@ data class Base(
 )
 
 @Suppress("FunctionName")
-suspend inline fun <reified T> Get(
+suspend inline fun <reified T> Get( //test
     url: String,
     crossinline block: HttpRequestBuilder.(Environment)->Unit = {port  = it.hanoiBackendPort}
 ): Action<T> = State{
