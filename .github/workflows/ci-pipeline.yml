@@ -138,6 +138,11 @@ jobs:
         if: env.frontend_changed == 'true'
         run: chmod +x ./gradlew
 
+      - name: Build frontend
+        if: env.frontend_changed == 'true'
+        run: |
+          ./gradlew :hanoi-frontend:build
+
       - name: Cache frontend build artifacts
         if: env.frontend_changed == 'true'
         uses: actions/cache@v4
@@ -146,11 +151,6 @@ jobs:
           key: frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-${{ hashFiles('hanoi-frontend/**') }}
           restore-keys: |
             frontend-${{ env.ENVIRONMENT }}-${{ runner.os }}-
-
-      - name: Build frontend
-        if: env.frontend_changed == 'true'
-        run: |
-          ./gradlew :hanoi-frontend:build
 
       - name: Upload frontend artifact
         if: env.frontend_changed == 'true'

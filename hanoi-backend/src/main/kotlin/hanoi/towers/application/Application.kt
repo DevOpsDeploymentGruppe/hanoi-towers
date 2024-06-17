@@ -9,8 +9,9 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 
+// Test
 
-fun Application.hanoi() { //test
+fun Application.hanoi() {
 
     install(CORS) {
         allowMethod(HttpMethod.Options)
