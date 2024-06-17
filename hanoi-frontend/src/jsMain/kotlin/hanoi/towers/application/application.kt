@@ -9,7 +9,7 @@ import lib.compose.Markup
 import lib.compose.storage.Store
 import org.jetbrains.compose.web.renderComposable
 
-
+// test
 @Markup
 @Suppress("FunctionName")
 fun Application() = renderComposable(rootElementId = "root") {
