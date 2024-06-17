@@ -1,4 +1,4 @@
-name: CI Pipeline Hanoi Towers
+name: CI CD Pipeline Hanoi Towers
 
 on:
   push:
@@ -233,7 +233,7 @@ jobs:
           docker push ${REGISTRY}/hanoi_database_${ENVIRONMENT}:latest
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: set-environment
+    needs: [build-and-push-docker, set-environment]
     environment: ${{ needs.set-environment.outputs.env }}
     steps:
       - name: Checkout repository
