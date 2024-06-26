@@ -38,8 +38,7 @@ fun MainPage(storage: Storage<Main>) {
             Li { P { Text(texts["rulesOfTheGame.rule3"]) } }
         }
 
-
-
+        H2 { Text(texts["gameModes.headline"]) }
 
         Flex {
             Card {
